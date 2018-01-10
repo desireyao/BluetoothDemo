@@ -64,7 +64,7 @@ public class ScannUtil {
      */
     private ScanSettings buildScanSettings() {
         ScanSettings.Builder builder = new ScanSettings.Builder();
-        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
+        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER);
         return builder.build();
     }
 

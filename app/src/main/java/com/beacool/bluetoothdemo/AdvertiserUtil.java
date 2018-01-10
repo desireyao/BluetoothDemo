@@ -76,7 +76,6 @@ public class AdvertiserUtil {
         AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
         dataBuilder.addServiceUuid(Constants.Service_UUID);
         dataBuilder.setIncludeDeviceName(true);
-//       String failureData = "abcd";
         dataBuilder.addServiceData(Constants.Service_UUID, mByteDatas);
         return dataBuilder.build();
     }
@@ -87,7 +86,7 @@ public class AdvertiserUtil {
      */
     private AdvertiseSettings buildAdvertiseSettings() {
         AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
-        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER);
+        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
         settingsBuilder.setTimeout(0);
         return settingsBuilder.build();
     }

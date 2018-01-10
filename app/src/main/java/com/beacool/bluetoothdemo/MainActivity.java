@@ -40,27 +40,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
 
-        PermissionUtil.getInstance().request(new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION},
-
-                new PermissionResultAdapter() {
-                    @Override
-                    public void onPermissionGranted(String... permissions) {
-                        Toast.makeText(MainActivity.this, permissions[0] + " is granted", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(String... permissions) {
-                        Toast.makeText(MainActivity.this, permissions[0] + " is denied", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onRationalShow(String... permissions) {
-                        Toast.makeText(MainActivity.this, permissions[0] + " is rational", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
+//        PermissionUtil.getInstance().request(new String[]{
+//                        Manifest.permission.ACCESS_FINE_LOCATION,
+//                        Manifest.permission.ACCESS_COARSE_LOCATION},
+//
+//                new PermissionResultAdapter() {
+//                    @Override
+//                    public void onPermissionGranted(String... permissions) {
+//                        Toast.makeText(MainActivity.this, permissions[0] + " is granted", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onPermissionDenied(String... permissions) {
+//                        Toast.makeText(MainActivity.this, permissions[0] + " is denied", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onRationalShow(String... permissions) {
+//                        Toast.makeText(MainActivity.this, permissions[0] + " is rational", Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                });
     }
 
     @Override
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ScanRecord record = result.getScanRecord();
                     String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(System.currentTimeMillis());
                     byte[] datas = record.getBytes();
-                    contentStringBuffer.append("search data = " + datas[27]
+                    contentStringBuffer.append("search data = " + datas[30]
                             + " | name =" + record.getDeviceName()
                             + " | rssi = " + result.getRssi()
                             + " | mCount = " + mCount
@@ -131,12 +131,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 while (mDATA < 1000) {
                     mDATA++;
-                    byte[] datas = new byte[3];
-                    datas[0] = 0x09;
-                    datas[1] = 0x09;
-                    datas[2] = 0x09;
-                    int frequency = Integer.parseInt(edit_frequency.getText().toString());
+                    byte[] datas = new byte[1];
+                    datas[0] = (byte) (mDATA % 100);
 
+                    int frequency = Integer.parseInt(edit_frequency.getText().toString());
                     advertiserServiceUtil = new AdvertiserUtil(getApplicationContext());
                     advertiserServiceUtil.setAdVertiseListener(new AdvertiserUtil.AdVertiseListener() {
                         @Override
