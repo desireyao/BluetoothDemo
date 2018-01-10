@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AdvertiserUtil advertiserServiceUtil;
     private ScannUtil scannUtil;
 
-    private byte mDATA = 0x00;
+    private int mDATA = 0;
 
     private StringBuffer contentStringBuffer;
     private int mCount;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initData() {
-//        advertiserServiceUtil = new AdvertiserUtil(getApplicationContext());
+        advertiserServiceUtil = new AdvertiserUtil(getApplicationContext());
         scannUtil = new ScannUtil(this.getApplicationContext());
     }
 
@@ -94,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             contentStringBuffer = new StringBuffer();
             mDATA = 0;
             mCount = 0;
+            int frequency = Integer.parseInt(edit_frequency.getText().toString());
+            advertiserServiceUtil.setFrequecy(frequency);
             startAd();
         } else if (id == R.id.btn_search) {
             contentStringBuffer = new StringBuffer();
@@ -108,12 +110,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ScanRecord record = result.getScanRecord();
                     String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(System.currentTimeMillis());
                     byte[] datas = record.getBytes();
-                    contentStringBuffer.append("search data = " + datas[30]
+
+                    int data1 = datas[26] << 8;
+                    int data2 = datas[27] << 4;
+                    int data3 = datas[28];
+                    int data = data1 + data2 + data3;
+
+                    contentStringBuffer.append("search data = " + data
                             + " | name =" + record.getDeviceName()
                             + " | rssi = " + result.getRssi()
                             + " | mCount = " + mCount
                             + " \n  time = " + time
                             + " \n");
+
                     tv_content.setText(contentStringBuffer.toString());
                 }
             });
@@ -125,36 +134,69 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+//    public void startAd() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (mDATA < 1000) {
+//                    mDATA++;
+//                    byte[] datas = new byte[1];
+//                    datas[0] = (byte) (mDATA % 100);
+//
+//                    int frequency = Integer.parseInt(edit_frequency.getText().toString());
+//                    advertiserServiceUtil = new AdvertiserUtil(getApplicationContext());
+//                    advertiserServiceUtil.setAdVertiseListener(new AdvertiserUtil.AdVertiseListener() {
+//                        @Override
+//                        public void onAdvertiseListener(byte[] data) {
+//                            mCount++;
+//                            contentStringBuffer.append("advertisedata:" + data[0]
+//                                    + " | mCount = " + mCount
+//                                    + " | time = " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(System.currentTimeMillis()) + "\n");
+//                            tv_content.setText(contentStringBuffer.toString());
+//                        }
+//                    });
+//                    advertiserServiceUtil.startAd(datas);
+//
+//                    try {
+//                        Thread.sleep(frequency);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }).start();
+//    }
+
+
+    private byte[] datas;
+
     public void startAd() {
-        new Thread(new Runnable() {
+        datas = new byte[3];
+        datas[0] = (byte) (mDATA >> 8);
+        datas[1] = (byte) (mDATA >> 4 & 0x0f);
+        datas[2] = (byte) (mDATA & 0x0f);
+
+        advertiserServiceUtil.setAdVertiseListener(new AdvertiserUtil.AdVertiseListener() {
             @Override
-            public void run() {
-                while (mDATA < 1000) {
-                    mDATA++;
-                    byte[] datas = new byte[1];
-                    datas[0] = (byte) (mDATA % 100);
+            public void onAdvertiseListener(byte[] data) {
+                mCount ++;
+                mDATA ++;
 
-                    int frequency = Integer.parseInt(edit_frequency.getText().toString());
-                    advertiserServiceUtil = new AdvertiserUtil(getApplicationContext());
-                    advertiserServiceUtil.setAdVertiseListener(new AdvertiserUtil.AdVertiseListener() {
-                        @Override
-                        public void onAdvertiseListener(byte[] data) {
-                            mCount++;
-                            contentStringBuffer.append("advertisedata:" + data[0]
-                                    + " | mCount = " + mCount
-                                    + " | time = " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(System.currentTimeMillis()) + "\n");
-                            tv_content.setText(contentStringBuffer.toString());
-                        }
-                    });
+                datas[0] = (byte) (mDATA >> 8 & 0x0f);
+                datas[1] = (byte) (mDATA >> 4 & 0x0f);
+                datas[2] = (byte) (mDATA & 0x0f);
+
+                contentStringBuffer.append("advertisedata:" + mDATA
+                        + " | mCount = " + mCount
+                        + " | time = " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(System.currentTimeMillis()) + "\n");
+                tv_content.setText(contentStringBuffer.toString());
+
+                if (mCount < 1000) {
                     advertiserServiceUtil.startAd(datas);
-
-                    try {
-                        Thread.sleep(frequency);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
-        }).start();
+        });
+        advertiserServiceUtil.startAd(datas);
     }
+
 }

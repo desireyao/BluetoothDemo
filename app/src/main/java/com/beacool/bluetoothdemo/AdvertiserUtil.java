@@ -23,6 +23,9 @@ public class AdvertiserUtil {
     private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
     private AdvertiseCallback mAdvertiseCallback;
     private byte[] mByteDatas;
+    private int mFrequency;
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     public AdvertiserUtil(Context context) {
         if (mBluetoothLeAdvertiser == null) {
@@ -35,6 +38,10 @@ public class AdvertiserUtil {
                 }
             }
         }
+    }
+
+    public void setFrequecy(int frequency){
+        mFrequency = frequency;
     }
 
     public void startAd(byte[] datas) {
@@ -106,16 +113,27 @@ public class AdvertiserUtil {
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
             super.onStartSuccess(settingsInEffect);
-            Log.e(TAG, "Advertising successfully started");
+
+            int data1 = mByteDatas[0] << 8;
+            int data2 = mByteDatas[1] << 4;
+            int data3 = mByteDatas[2];
+            int data = data1 + data2 + data3;
+            Log.e(TAG, "Advertising successfully started sendData = " + data);
 
             if (mBluetoothLeAdvertiser != null) {
-                Log.e(TAG, "stop Advertising --->");
+                Log.e(TAG, "stop Advertising--->");
                 stopAdvertising();
             }
 
-            if (adVertiseListener != null) {
-                adVertiseListener.onAdvertiseListener(mByteDatas);
-            }
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(TAG, "postDelayed onAdvertiseListener--->");
+                    if (adVertiseListener != null) {
+                        adVertiseListener.onAdvertiseListener(mByteDatas);
+                    }
+                }
+            }, mFrequency);
         }
     }
 

@@ -16,8 +16,8 @@
             android:id="@+id/edit_frequency"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text="100"
-            android:hint="频率ms" />
+            android:hint="频率ms"
+            android:text="100" />
 
         <Button
             android:id="@+id/btn_start_ad"
@@ -30,23 +30,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-    <Button
-        android:id="@+id/btn_search"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="搜索广播" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_reset"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="重置" />
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="搜索广播" />
+
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="重置" />
 
     </LinearLayout>
 
