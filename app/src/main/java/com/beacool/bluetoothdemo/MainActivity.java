@@ -3,10 +3,8 @@ package com.beacool.bluetoothdemo;
 import android.Manifest;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,7 +16,6 @@ import com.yxp.permission.util.lib.callback.PermissionResultAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -152,44 +149,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mCount = 0;
             tv_content.setText(contentStringBuffer.toString());
             advertiserServiceUtil.stopAdvertising();
-            if(executor != null)
+            if (executor != null)
                 executor.shutdown();
         }
     }
-
-//    public void startAd() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (mDATA < 1000) {
-//                    mDATA++;
-//                    datas = new byte[3];
-//                    datas[0] = (byte) (mDATA >> 8 & 0x0f);
-//                    datas[1] = (byte) (mDATA >> 4 & 0x0f);
-//                    datas[2] = (byte) (mDATA & 0x0f);
-//
-//                    advertiserServiceUtil = new AdvertiserUtil(getApplicationContext());
-//                    advertiserServiceUtil.setAdVertiseListener(new AdvertiserUtil.AdVertiseListener() {
-//                        @Override
-//                        public void onAdvertiseListener(byte[] data) {
-//                            mCount++;
-//                            contentStringBuffer.append("advertisedata:" + mDATA
-//                                    + " | mCount = " + mCount
-//                                    + " | time = " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(System.currentTimeMillis()) + "\n");
-//                            tv_content.setText(contentStringBuffer.toString());
-//                        }
-//                    });
-//                    advertiserServiceUtil.startAdvertising(datas);
-//
-//                    try {
-//                        Thread.sleep(mFrequency);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }).start();
-//    }
 
     /**
      * 蓝牙以固定频率开始广播
@@ -218,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             datas[1] = (byte) (mDATA >> 4 & 0x0f);
             datas[2] = (byte) (mDATA & 0x0f);
 
-//              advertiserServiceUtil = new AdvertiserUtil(getApplicationContext());
             advertiserServiceUtil.setAdVertiseListener(new AdvertiserUtil.AdVertiseListener() {
                 @Override
                 public void onAdvertiseListener(byte[] datas) {

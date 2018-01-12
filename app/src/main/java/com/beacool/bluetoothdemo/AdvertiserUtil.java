@@ -5,12 +5,8 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
-import android.bluetooth.le.AdvertisingSetParameters;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
 /**
@@ -77,14 +73,13 @@ public class AdvertiserUtil {
     private AdvertiseData buildAdvertiseData() {
         AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
         dataBuilder.addServiceUuid(Constants.Service_UUID);
-        dataBuilder.setIncludeDeviceName(true);
+        dataBuilder.setIncludeDeviceName(false);
         dataBuilder.addServiceData(Constants.Service_UUID, mByteDatas);
         return dataBuilder.build();
     }
 
     /**
-     * Returns an AdvertiseSettings object set to use low power (to help preserve battery life)
-     * and disable the built-in timeout since this code uses its own timeout runnable.
+     * 设置发包频率 ，ADVERTISE_MODE_LOW_LATENCY 100 ms
      */
     private AdvertiseSettings buildAdvertiseSettings() {
         AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
