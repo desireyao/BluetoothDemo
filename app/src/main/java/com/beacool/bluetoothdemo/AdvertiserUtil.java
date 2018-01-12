@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.AdvertisingSetParameters;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
 import android.os.Handler;
@@ -23,9 +24,6 @@ public class AdvertiserUtil {
     private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
     private AdvertiseCallback mAdvertiseCallback;
     private byte[] mByteDatas;
-    private int mFrequency;
-
-    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     public AdvertiserUtil(Context context) {
         if (mBluetoothLeAdvertiser == null) {
@@ -40,11 +38,8 @@ public class AdvertiserUtil {
         }
     }
 
-    public void setFrequecy(int frequency){
-        mFrequency = frequency;
-    }
 
-    public void startAd(byte[] datas) {
+    public void startAdvertising(byte[] datas) {
         this.mByteDatas = datas;
         startAdvertising();
     }
@@ -69,7 +64,7 @@ public class AdvertiserUtil {
      * Stops BLE Advertising.
      */
     public void stopAdvertising() {
-        Log.d(TAG, "Service: Stopping Advertising");
+        Log.d(TAG, "Service: Stopping Advertising--->");
         if (mBluetoothLeAdvertiser != null && mAdvertiseCallback != null) {
             mBluetoothLeAdvertiser.stopAdvertising(mAdvertiseCallback);
             mAdvertiseCallback = null;
@@ -107,7 +102,16 @@ public class AdvertiserUtil {
         @Override
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
-            Log.d(TAG, "Advertising failed");
+            int data1 = mByteDatas[0] << 8;
+            int data2 = mByteDatas[1] << 4;
+            int data3 = mByteDatas[2];
+            int data = data1 + data2 + data3;
+            Log.e(TAG, "Advertising failed sendData = " + data);
+
+            if (mBluetoothLeAdvertiser != null) {
+                Log.e(TAG, "stop Advertising--->");
+                stopAdvertising();
+            }
         }
 
         @Override
@@ -120,20 +124,14 @@ public class AdvertiserUtil {
             int data = data1 + data2 + data3;
             Log.e(TAG, "Advertising successfully started sendData = " + data);
 
-            if (mBluetoothLeAdvertiser != null) {
-                Log.e(TAG, "stop Advertising--->");
-                stopAdvertising();
-            }
+//            if (mBluetoothLeAdvertiser != null) {
+//                Log.e(TAG, "stop Advertising--->");
+//                stopAdvertising();
+//            }
 
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.e(TAG, "postDelayed onAdvertiseListener--->");
-                    if (adVertiseListener != null) {
-                        adVertiseListener.onAdvertiseListener(mByteDatas);
-                    }
-                }
-            }, mFrequency);
+            if (adVertiseListener != null) {
+                adVertiseListener.onAdvertiseListener(mByteDatas);
+            }
         }
     }
 
@@ -146,5 +144,8 @@ public class AdvertiserUtil {
     public void setAdVertiseListener(AdVertiseListener callback) {
         this.adVertiseListener = callback;
     }
+
+
+
 
 }

@@ -109,4 +109,26 @@ public class ScannUtil {
         scannListener = listener;
     }
 
+    public static byte[] parseAdverData(byte[] scanRecord) {
+        int len = scanRecord.length;
+        int start = 0;
+        for (int i = 0; i < len - 1; i++) {
+            if ((scanRecord[i] & 0xff) == 0xb8
+                    && (scanRecord[i + 1] & 0xff) == 0x06) {
+                start = i + 5;
+                break;
+            }
+        }
+
+        byte[] data = new byte[3];
+//        for (int i = start; i <= end; i++) {
+//            data[i] = scanRecord[i];
+//        }
+        data[0] = scanRecord[start];
+        data[1] = scanRecord[start + 1];
+        data[2] = scanRecord[start + 2];
+
+        return data;
+    }
+
 }
