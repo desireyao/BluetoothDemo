@@ -64,7 +64,7 @@ public class ScannUtil {
      */
     private ScanSettings buildScanSettings() {
         ScanSettings.Builder builder = new ScanSettings.Builder();
-        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER);
+        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
         return builder.build();
     }
 
@@ -121,9 +121,6 @@ public class ScannUtil {
         }
 
         byte[] data = new byte[3];
-//        for (int i = start; i <= end; i++) {
-//            data[i] = scanRecord[i];
-//        }
         data[0] = scanRecord[start];
         data[1] = scanRecord[start + 1];
         data[2] = scanRecord[start + 2];
