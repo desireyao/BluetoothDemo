@@ -4,18 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.beacool.bluetoothdemo.MainActivity">
+    tools:context="com.beacool.bluetoothdemo.gatt.GattMainActivity">
 
     <Button
-        android:id="@+id/btn_advertise_activity"
+        android:id="@+id/btn_start_advertise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="模拟广播接收和发送" />
+        android:text="开始广播" />
 
     <Button
-        android:id="@+id/btn_gatt_activity"
+        android:id="@+id/btn_search_advertise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="模拟连接和发送数据" />
+        android:text="搜索广播" />
 
 </LinearLayout>

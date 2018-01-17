@@ -1,4 +1,4 @@
-package com.beacool.bluetoothdemo;
+package com.beacool.bluetoothdemo.advertise;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -10,6 +10,8 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.util.Log;
+
+import com.beacool.bluetoothdemo.tools.LogTool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +85,7 @@ public class ScannUtil {
             super.onScanResult(callbackType, result);
 
             ScanRecord record = result.getScanRecord();
-            Log.e(TAG, "data = " + LogTool.LogBytes2Hex(record.getBytes()));
+            Log.e(TAG, LogTool.LogBytes2Hex(record.getBytes(), "data = "));
             Log.e(TAG, "uuid = " + record.getServiceUuids().toString()
                     + "\n record.getDeviceName() = " + record.getDeviceName());
 

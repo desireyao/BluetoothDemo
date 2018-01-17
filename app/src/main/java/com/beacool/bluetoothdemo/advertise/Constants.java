@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.beacool.bluetoothdemo;
+package com.beacool.bluetoothdemo.advertise;
 
 import android.os.ParcelUuid;
 

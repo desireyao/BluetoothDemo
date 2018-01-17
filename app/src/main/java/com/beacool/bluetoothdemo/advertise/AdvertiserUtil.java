@@ -1,4 +1,4 @@
-package com.beacool.bluetoothdemo;
+package com.beacool.bluetoothdemo.advertise;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
