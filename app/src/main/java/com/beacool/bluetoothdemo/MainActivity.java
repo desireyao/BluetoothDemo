@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.beacool.bluetoothdemo.advertise.AdvertiseMainActivity;
+import com.beacool.bluetoothdemo.chat.ChatActivity;
 import com.beacool.bluetoothdemo.gatt.GattMainActivity;
 import com.yxp.permission.util.lib.PermissionUtil;
 import com.yxp.permission.util.lib.callback.PermissionResultAdapter;
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button btn_advertise_activity;
     private Button btn_gatt_activity;
+    private Button btn_chat_activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btn_gatt_activity = findViewById(R.id.btn_gatt_activity);
         btn_gatt_activity.setOnClickListener(this);
+
+        btn_chat_activity = findViewById(R.id.btn_chat_activity);
+        btn_chat_activity.setOnClickListener(this);
     }
 
     @Override
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(new Intent(this, AdvertiseMainActivity.class));
         } else if (id == R.id.btn_gatt_activity) {
             startActivity(new Intent(this, GattMainActivity.class));
+        }else if(id == R.id.btn_chat_activity){
+            startActivity(new Intent(this, ChatActivity.class));
         }
     }
 }

@@ -22,7 +22,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".gatt.GattMainActivity" />
-        <activity android:name=".advertise.AdvertiseMainActivity"></activity>
+        <activity android:name=".advertise.AdvertiseMainActivity" />
+        <activity android:name=".chat.ChatActivity"></activity>
+
+        <service
+            android:name=".chat.service.BluetoothMainService"
+            android:enabled="true">
+        </service>
+
     </application>
 
 </manifest>
