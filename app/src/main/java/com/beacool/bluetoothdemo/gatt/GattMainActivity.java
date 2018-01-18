@@ -51,6 +51,7 @@ public class GattMainActivity extends AppCompatActivity implements View.OnClickL
     }
 
     ScanCallback mScanCallback = new ScanCallback() {
+
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             ScanRecord scanRecord = result.getScanRecord();

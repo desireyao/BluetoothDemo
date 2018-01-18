@@ -1,4 +1,4 @@
-package com.beacool.bluetoothdemo.chat.service.eventmsg;
+package com.beacool.bluetoothdemo.chat.eventmsg;
 
 /**
  * Created by yaoh on 2018/1/17.
