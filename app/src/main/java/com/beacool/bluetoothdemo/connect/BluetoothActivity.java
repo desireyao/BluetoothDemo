@@ -12,9 +12,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.beacool.bluetoothdemo.R;
 import com.beacool.bluetoothdemo.chat.eventmsg.MessageEvent;
+import com.beacool.bluetoothdemo.chat.eventmsg.NotifyBluetoothState;
 import com.beacool.bluetoothdemo.chat.service.BluetoothMainService;
 import com.beacool.bluetoothdemo.connect.service.BluetoothService;
 import com.beacool.bluetoothdemo.tools.LogTool;
@@ -22,6 +24,8 @@ import com.beacool.bluetoothdemo.tools.LogTool;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.text.SimpleDateFormat;
 
 public class BluetoothActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,9 +36,13 @@ public class BluetoothActivity extends AppCompatActivity implements View.OnClick
     private Button btn_disconnect;
     private Button btn_reconnect;
 
+    private TextView tv_content;
+
     private BluetoothService myService;
 
     private static final String BLE_ADDRESS = "FF:1E:85:79:BC:7A";
+
+    private StringBuffer stringBuffer = new StringBuffer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,8 @@ public class BluetoothActivity extends AppCompatActivity implements View.OnClick
         btn_stopScan.setOnClickListener(this);
         btn_disconnect.setOnClickListener(this);
         btn_reconnect.setOnClickListener(this);
+
+        tv_content = findViewById(R.id.tv_content);
 
         EventBus.getDefault().register(this);
         startService(new Intent(this, BluetoothService.class));
@@ -97,6 +107,8 @@ public class BluetoothActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void reConnectDevice() {
+        myService.stopScanLeDevice(leScanCallback);
+
         if (myService != null) {
             myService.reConnectDevice();
         }
@@ -113,6 +125,15 @@ public class BluetoothActivity extends AppCompatActivity implements View.OnClick
             Intent intentService = new Intent(this, BluetoothService.class);
             bindService(intentService, mConnection, Context.BIND_AUTO_CREATE);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStateChanged(NotifyBluetoothState.NOTIFY_TYPE state){
+        stringBuffer.append("---> "
+                + new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis())
+                + " | "
+                + state.name() + "\n");
+        tv_content.setText(stringBuffer.toString());
     }
 
 

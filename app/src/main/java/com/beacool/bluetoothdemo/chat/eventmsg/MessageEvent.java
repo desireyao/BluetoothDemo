@@ -9,7 +9,6 @@ public class MessageEvent {
     public enum NOTIFY_TYPE{
         SERVICE_ONCREATE,
         SERVICE_ONSTART,
-        BLUETOOTH_REC_DATA,
     }
 
     public MessageEvent(NOTIFY_TYPE notifyType){

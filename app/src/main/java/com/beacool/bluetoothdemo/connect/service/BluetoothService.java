@@ -25,6 +25,7 @@ import android.util.Log;
 import com.beacool.bluetoothdemo.advertise.Constants;
 import com.beacool.bluetoothdemo.advertise.ScannUtil;
 import com.beacool.bluetoothdemo.chat.eventmsg.MessageEvent;
+import com.beacool.bluetoothdemo.chat.eventmsg.NotifyBluetoothState;
 import com.beacool.bluetoothdemo.tools.LogTool;
 
 import org.greenrobot.eventbus.EventBus;
@@ -46,18 +47,6 @@ public class BluetoothService extends Service {
 
     private String connectedAddress;
     private BluetoothGatt mBluetoothGatt;
-
-    private static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
-    private static final int STATE_CONNECTED = 2;
-
-    private int mConnectionState = STATE_DISCONNECTED;
-
-    public final static String ACTION_GATT_CONNECTED = "ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED = "ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED = "ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE = "ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA = "EXTRA_DATA";
 
     public BluetoothService() {
     }
@@ -93,7 +82,7 @@ public class BluetoothService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        LogTool.LogE(TAG,"onUnbind ---> ");
+        LogTool.LogE(TAG, "onUnbind ---> ");
         return super.onUnbind(intent);
     }
 
@@ -101,27 +90,22 @@ public class BluetoothService extends Service {
 
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            String intentAction;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                intentAction = ACTION_GATT_CONNECTED;
-                mConnectionState = STATE_CONNECTED;
-
-                broadcastUpdate(intentAction);
+                EventBus.getDefault().post(NotifyBluetoothState.NOTIFY_TYPE.CONNECT_SUCCEED);
                 Log.e(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
                 Log.e(TAG, "Attempting to start service discovery:" + mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                intentAction = ACTION_GATT_DISCONNECTED;
-                mConnectionState = STATE_DISCONNECTED;
+                EventBus.getDefault().post(NotifyBluetoothState.NOTIFY_TYPE.DISCONNECTED);
                 Log.e(TAG, "Disconnected from GATT server.");
-                broadcastUpdate(intentAction);
             }
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.e(TAG, "onServicesDiscovered status: " + status);
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
@@ -133,7 +117,7 @@ public class BluetoothService extends Service {
             Log.d(TAG, "onCharacteristicRead:" + status);
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+
             }
         }
 
@@ -153,7 +137,8 @@ public class BluetoothService extends Service {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            LogTool.LogE(TAG, "onCharacteristicChanged --->");
+
         }
 
         @Override
@@ -168,27 +153,6 @@ public class BluetoothService extends Service {
         }
     };
 
-    private void broadcastUpdate(final String action) {
-        final Intent intent = new Intent(action);
-//        sendBroadcast(intent);
-
-        LogTool.LogE(TAG,"action ---> " + action);
-    }
-
-    private void broadcastUpdate(final String action,
-                                 final BluetoothGattCharacteristic characteristic) {
-        final Intent intent = new Intent(action);
-
-        byte[] data = characteristic.getValue();
-        if (data != null) {
-            intent.putExtra(EXTRA_DATA, data);
-        }
-
-//        sendBroadcast(intent);
-
-        LogTool.LogE(TAG,"broadcastUpdate_action ---> " + action);
-    }
-
     public boolean initialize() {
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -198,16 +162,20 @@ public class BluetoothService extends Service {
             }
         }
 
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
-            return false;
+            mBluetoothAdapter = mBluetoothManager.getAdapter();
+            if (mBluetoothAdapter == null) {
+                Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+                return false;
+            }
         }
 
-        mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-        if(mBluetoothLeScanner == null){
-            Log.e(TAG, "Unable to obtain a mBluetoothLeScanner.");
-            return false;
+        if (mBluetoothLeScanner == null) {
+            mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+            if (mBluetoothLeScanner == null) {
+                Log.e(TAG, "Unable to obtain a mBluetoothLeScanner.");
+                return false;
+            }
         }
 
         return true;
@@ -228,9 +196,10 @@ public class BluetoothService extends Service {
         // Previously connected device. Try to reconnect
         if (connectedAddress != null && address.equals(connectedAddress)
                 && mBluetoothGatt != null) {
+            EventBus.getDefault().post(NotifyBluetoothState.NOTIFY_TYPE.CONNECTING_EXIST_DEVICE);
+
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
-                mConnectionState = STATE_CONNECTING;
                 return true;
             } else {
                 return false;
@@ -243,11 +212,11 @@ public class BluetoothService extends Service {
             return false;
         }
 
+        EventBus.getDefault().post(NotifyBluetoothState.NOTIFY_TYPE.CONNECTING_NEW_DEVICE);
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
 
         connectedAddress = address;
-        mConnectionState = STATE_CONNECTING;
         return true;
     }
 
@@ -256,7 +225,7 @@ public class BluetoothService extends Service {
      *
      * @param enable
      */
-    public void scanLeDevice(final boolean enable,LeScanCallback mLeScanCallback) {
+    public void scanLeDevice(final boolean enable, LeScanCallback mLeScanCallback) {
         if (enable) {
             mBluetoothLeScanner.startScan(buildScanFilters(), buildScanSettings(), mLeScanCallback);
         } else {
@@ -266,9 +235,10 @@ public class BluetoothService extends Service {
 
     /**
      * 停止搜索设备
+     *
      * @param mLeScanCallback
      */
-    public void stopScanLeDevice(LeScanCallback mLeScanCallback){
+    public void stopScanLeDevice(LeScanCallback mLeScanCallback) {
         mBluetoothLeScanner.stopScan(mLeScanCallback);
     }
 
@@ -277,7 +247,7 @@ public class BluetoothService extends Service {
 
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            LogTool.LogE(TAG,"onScanResult = " + result.toString());
+            LogTool.LogE(TAG, "onScanResult = " + result.toString());
 
             onScanDevice(result.getDevice());
         }
@@ -319,8 +289,8 @@ public class BluetoothService extends Service {
         mBluetoothGatt.disconnect();
     }
 
-    public void reConnectDevice(){
-        if(!TextUtils.isEmpty(connectedAddress)){
+    public void reConnectDevice() {
+        if (!TextUtils.isEmpty(connectedAddress)) {
             connect(connectedAddress);
         }
     }
