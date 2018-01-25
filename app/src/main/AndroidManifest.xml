@@ -29,7 +29,13 @@
             android:name=".chat.service.BluetoothMainService"
             android:enabled="true"></service>
 
+
+        <service
+            android:name=".connect.service.BluetoothService"
+            android:enabled="true"></service>
+
         <activity android:name=".connect.BluetoothActivity"></activity>
+
     </application>
 
 </manifest>
