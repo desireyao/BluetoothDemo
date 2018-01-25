@@ -164,8 +164,9 @@ public class BluetoothActivity extends AppCompatActivity implements View.OnClick
 
             if (TextUtils.equals(address, BLE_ADDRESS)) {
                 if (myService != null) {
+
                     myService.stopScanLeDevice(this);
-                    myService.connect(address);
+                    myService.connect(address,false);
                 }
             }
         }

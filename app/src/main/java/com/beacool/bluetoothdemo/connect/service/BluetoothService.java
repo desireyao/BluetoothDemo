@@ -187,29 +187,26 @@ public class BluetoothService extends Service {
      * @param address
      * @return
      */
-    public boolean connect(final String address) {
+    public void connect(final String address,boolean isReConnect) {
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
-            return false;
         }
 
         // Previously connected device. Try to reconnect
-        if (connectedAddress != null && address.equals(connectedAddress)
-                && mBluetoothGatt != null) {
+        if (connectedAddress != null
+                && address.equals(connectedAddress)
+                && mBluetoothGatt != null
+                && isReConnect) {
             EventBus.getDefault().post(NotifyBluetoothState.NOTIFY_TYPE.CONNECTING_EXIST_DEVICE);
 
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-            if (mBluetoothGatt.connect()) {
-                return true;
-            } else {
-                return false;
-            }
+            mBluetoothGatt.connect();
+            return;
         }
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
             Log.d(TAG, "没有设备");
-            return false;
         }
 
         EventBus.getDefault().post(NotifyBluetoothState.NOTIFY_TYPE.CONNECTING_NEW_DEVICE);
@@ -217,7 +214,6 @@ public class BluetoothService extends Service {
         Log.d(TAG, "Trying to create a new connection.");
 
         connectedAddress = address;
-        return true;
     }
 
     /**
@@ -291,7 +287,7 @@ public class BluetoothService extends Service {
 
     public void reConnectDevice() {
         if (!TextUtils.isEmpty(connectedAddress)) {
-            connect(connectedAddress);
+            connect(connectedAddress,true);
         }
     }
 }
