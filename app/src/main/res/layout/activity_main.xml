@@ -24,4 +24,10 @@
         android:layout_height="wrap_content"
         android:text="经典蓝牙测试" />
 
+    <Button
+        android:id="@+id/btn_connect_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试蓝牙的重连" />
+
 </LinearLayout>

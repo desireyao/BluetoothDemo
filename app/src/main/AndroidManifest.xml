@@ -23,13 +23,13 @@
         </activity>
         <activity android:name=".gatt.GattMainActivity" />
         <activity android:name=".advertise.AdvertiseMainActivity" />
-        <activity android:name=".chat.ChatActivity"></activity>
+        <activity android:name=".chat.ChatActivity" />
 
         <service
             android:name=".chat.service.BluetoothMainService"
-            android:enabled="true">
-        </service>
+            android:enabled="true"></service>
 
+        <activity android:name=".connect.BluetoothActivity"></activity>
     </application>
 
 </manifest>
